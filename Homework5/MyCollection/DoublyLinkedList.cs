@@ -1,16 +1,18 @@
-﻿namespace Cspro.Collection;
+﻿using Cspro.Collection.Interfaces;
 
-public class DoublyLinkedListNode : LinkedListNode
+namespace Cspro.Collection;
+
+public class DoublyLinkedListNode : LinkedListNode, IDoublyLinkedListNode
 {
 
-    public LinkedListNode? Prev { get; set; }
+    public ILinkedListNode? Prev { get; set; }
 
     public DoublyLinkedListNode(object value)
       : base(value)
     {
     }
 
-    public DoublyLinkedListNode(object value, LinkedListNode? prev, LinkedListNode? next) : base(value, next)
+    public DoublyLinkedListNode(object value, ILinkedListNode? prev, ILinkedListNode? next) : base(value, next)
     {
         this.Prev = prev;
     }
@@ -18,7 +20,7 @@ public class DoublyLinkedListNode : LinkedListNode
 
 public class DoublyLinkedList : LinkedList
 {
-    public new LinkedListNode? Last { get; private set; }
+    public new ILinkedListNode? Last { get; private set; }
 
     public override void Clear()
     {
@@ -26,10 +28,10 @@ public class DoublyLinkedList : LinkedList
         base.Clear();
     }
 
-    protected override LinkedListNode CreateNode(object value, LinkedListNode? prev = null, LinkedListNode? next = null)
+    protected override ILinkedListNode CreateNode(object value, ILinkedListNode? prev = null, ILinkedListNode? next = null)
       => new DoublyLinkedListNode(value, prev, next);
 
-    protected override void RemoveNodeInternal(LinkedListNode removeNode, LinkedListNode prevNode)
+    protected override void RemoveNodeInternal(ILinkedListNode removeNode, ILinkedListNode prevNode)
     {
 
         base.RemoveNodeInternal(removeNode, prevNode);
@@ -47,7 +49,7 @@ public class DoublyLinkedList : LinkedList
             nextNode.Prev = prevNode;
     }
 
-    protected override LinkedListNode AddInternal(object value, LinkedListNode prev, LinkedListNode next)
+    protected override ILinkedListNode AddInternal(object value, ILinkedListNode prev, ILinkedListNode next)
     {
 
         var newNode = base.AddInternal(value, prev, next);

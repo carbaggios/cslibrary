@@ -1,14 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using Cspro.Collection.Interfaces;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Cspro.Collection;
 
-public class Stack
+public class Stack : IStack, ICollection
 {
     private const int DefCapacity = 8;
-    private int[] _items;
+    private object[] _items;
     private int _count;
+
+    public System.Collections.IEnumerator GetEnumerator() => _items.GetEnumerator();
 
     public Stack() 
         : this(DefCapacity)
@@ -17,7 +20,7 @@ public class Stack
 
     public Stack(int capacity)
     {
-        _items = new int[capacity];
+        _items = new object[capacity];
         _count = 0;
     }
 
@@ -26,7 +29,7 @@ public class Stack
         get { return _count; }
     }
 
-    public void Push(int item)
+    public void Push(object item)
     {
         EnsureCapacity(_count + 1);
         _items[_count] = item;
@@ -38,7 +41,7 @@ public class Stack
         if (_items.Length < capacity)
         {
             int newCapacity = _items.Length == 0 ? DefCapacity : _items.Length * 2;
-            int[] newItems = new int[newCapacity];
+            object[] newItems = new object[newCapacity];
 
             for (int i = 0; i < _count; i++)
             {
@@ -49,7 +52,7 @@ public class Stack
         }
     }
 
-    public int Peek()
+    public object Peek()
     {
         if (_count == 0)
             throw new ArgumentNullException(nameof(_count));
@@ -57,21 +60,21 @@ public class Stack
         return _items[_count - 1];
     }
 
-    public int Pop()
+    public object Pop()
     {
         if (_count == 0)
             throw new ArgumentNullException(nameof(_count));
 
-        int item = _items[_count - 1];
+        object item = _items[_count - 1];
         _items[_count - 1] = default;
         _count--;
 
         return item;
     }
 
-    public int[] ToArray()
+    public object[] ToArray()
     {
-        int[] arr = new int[_count];
+        object[] arr = new object[_count];
 
         for (int i = 0; i < _count; i++)
         {
@@ -89,7 +92,7 @@ public class Stack
         _count = 0;
     }
 
-    public bool Contains(int item)
+    public bool Contains(object item)
     {
         for (int i = 0; i < _count; i++)
         {
