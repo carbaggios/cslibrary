@@ -1,18 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Cspro.Collection.Interfaces;
 
 namespace Cspro.Collection;
-public class Queue
+public class Queue : IQueue, ICollection
 {
     private const int DefCapacity = 8;
 
-    private int[] _items;
+    private object[] _items;
     private int _lead;
     private int _tail;
     private int _count;
+
+    public int Count
+    {
+        get { return _count; }
+    }
+
+    public System.Collections.IEnumerator GetEnumerator() => _items.GetEnumerator();
 
     public Queue()
         : this(DefCapacity)
@@ -20,7 +23,7 @@ public class Queue
 
     public Queue(int capacity)
     {
-        _items = new int[capacity];
+        _items = new object[capacity];
         _lead = _tail = _count = 0;
         
     }
@@ -35,14 +38,14 @@ public class Queue
         _count++;
     }
 
-    public int Dequeue()
+    public object Dequeue()
     {
         if (_count == 0)
         {
             throw new ArgumentNullException(nameof(_count));
         }
 
-        int item = _items[_lead];
+        object item = _items[_lead];
         _items[_lead] = default;
         _lead = (_lead + 1) % _items.Length;
         _count--;
@@ -50,16 +53,11 @@ public class Queue
         return item;
     }
 
-    public int Count
-    {
-        get { return _count; }
-    }
-
     public void Clear()
     {
         for (int i = 0; i < _items.Length; i++)
         {
-            _items[i] = default(int);
+            _items[i] = default(object);
         }
 
         _lead = 0;
@@ -67,7 +65,7 @@ public class Queue
         _count = 0;
     }
 
-    public bool Contains(int item)
+    public bool Contains(object item)
     {
         for (int i = 0; i < _count; i++)
         {
@@ -77,7 +75,7 @@ public class Queue
         return false;
     }
 
-    public int Peek()
+    public object Peek()
     {
         if (_count == 0)
             throw new ArgumentNullException(nameof(_count));
@@ -85,9 +83,9 @@ public class Queue
         return _items[_lead];
     }
 
-    public int[] ToArray()
+    public object[] ToArray()
     {
-        int[] arr = new int[_count];
+        object[] arr = new object[_count];
 
         for (int i = 0; i < _count; i++)
         {
@@ -102,7 +100,7 @@ public class Queue
         if (_items.Length < capacity)
         {
             int newCapacity = _items.Length == 0 ? 4 : _items.Length * 2;
-            int[] newItems = new int[newCapacity];
+            object[] newItems = new object[newCapacity];
             
             for (int i = 0; i < _count; i++)
             {

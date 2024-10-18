@@ -1,9 +1,11 @@
-﻿namespace Cspro.Collection;
+﻿using Cspro.Collection.Interfaces;
 
-public class LinkedListNode
+namespace Cspro.Collection;
+
+public class LinkedListNode : ILinkedListNode
 {
     public object Value { get; }
-    public LinkedListNode? Next { get; set; }
+    public ILinkedListNode? Next { get; set; }
 
     public LinkedListNode(object value)
     {
@@ -11,22 +13,22 @@ public class LinkedListNode
         Next = null;
     }
 
-    public LinkedListNode(object value, LinkedListNode next)
+    public LinkedListNode(object value, ILinkedListNode next)
     {
         Value = value;
         Next = next;
     }
 }
 
-public class LinkedList
+public class LinkedList : ILinkedList
 {
-    public LinkedListNode? First { get; protected set; }
-    public LinkedListNode? Last { get; protected set; }
+    public ILinkedListNode? First { get; protected set; }
+    public ILinkedListNode? Last { get; protected set; }
     public int Count { get; protected set; }
 
-    protected virtual LinkedListNode CreateNode(object value, LinkedListNode prev, LinkedListNode next) => new LinkedListNode(value, next);
+    protected virtual ILinkedListNode CreateNode(object value, ILinkedListNode prev, ILinkedListNode next) => new LinkedListNode(value, next);
 
-    protected virtual LinkedListNode AddInternal(object value, LinkedListNode prev, LinkedListNode next)
+    protected virtual ILinkedListNode AddInternal(object value, ILinkedListNode prev, ILinkedListNode next)
     {
         var node = CreateNode(value, prev, next);
         
@@ -38,7 +40,9 @@ public class LinkedList
         return node;
     }
 
-    protected virtual void RemoveNodeInternal(LinkedListNode removeNode, LinkedListNode prevNode)
+    public System.Collections.IEnumerator GetEnumerator() => new LinkedListEnumerator(First);
+
+    protected virtual void RemoveNodeInternal(ILinkedListNode removeNode, ILinkedListNode prevNode)
     {
 
         if (removeNode == null)
@@ -88,8 +92,8 @@ public class LinkedList
         First = AddInternal(value, prev: null, next: First);
     }
 
-    public LinkedListNode Insert(LinkedListNode node, object value) =>
-    AddInternal(value, prev: node, next: node.Next!);
+    public ILinkedListNode Insert(ILinkedListNode node, object value) =>
+        AddInternal(value, prev: node, next: node.Next!);
 
     public bool Contains(object data)
     {
@@ -118,6 +122,25 @@ public class LinkedList
         }
 
         return arr;
+    }
+
+    private class LinkedListEnumerator : System.Collections.IEnumerator
+    {
+
+        private readonly ILinkedListNode first;
+        private ILinkedListNode current;
+
+        public LinkedListEnumerator(ILinkedListNode node) => first = node;
+
+        public object Current => current.Value;
+
+        public bool MoveNext()
+        {
+            current = current == null ? first : current.Next;
+            return current != null;
+        }
+
+        public void Reset() => current = first;
     }
 }
 

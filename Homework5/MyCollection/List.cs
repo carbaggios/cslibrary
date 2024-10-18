@@ -1,14 +1,33 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections;
 
 namespace Cspro.Collection
 {
-    public class List
+    public class List : Cspro.Collection.Interfaces.IList
     {
+        private class ListEnumerator : IEnumerator
+        {
+
+            private readonly List _list;
+            private int currentIndex = -1;
+
+            public ListEnumerator(List list) => this._list = list;
+
+            public object? Current => _list[currentIndex];
+
+            public bool MoveNext() => ++currentIndex < _list.Count;
+
+            public void Reset() => currentIndex = -1;
+        }
+
         private const int _defaultCapacity = 8;
         private object?[] _array;
+        private readonly object syncRoot = new object();
 
         public int Count { get; private set; } = 0;
         public int Capacity => _array.Length;
+        public bool IsSynchronized => false;
+        public object SyncRoot => syncRoot;
+        public IEnumerator GetEnumerator() => new ListEnumerator(this);
 
         public List() 
             : this(_defaultCapacity)
@@ -42,6 +61,13 @@ namespace Cspro.Collection
             }
         }
 
+        public void CopyTo(Array array, int index)
+        {
+
+            for (int innerIndex = 0; innerIndex < Count; innerIndex++, index++)
+                array.SetValue(_array[innerIndex], index);
+        }
+
         public void CopyFrom(object?[] array, int index)
         {
             for (int i = index; i < Count; i++)
@@ -70,12 +96,14 @@ namespace Cspro.Collection
             return -1;
         }
 
-        public void Add(object? value)
+        public int Add(object value)
         {
             Grow();
 
             _array[Count] = value;
             Count++;
+
+            return Count - 1;
         }
 
         public void Insert(int index, object? value)
@@ -131,17 +159,17 @@ namespace Cspro.Collection
 
         public bool Contains(object? value) => IndexOf(value) != -1;
 
-        public object?[] ToArray()
+        public object[] ToArray()
         {
             if (Count == 0) 
-                return Array.Empty<object?>();
+                return Array.Empty<object>();
 
             object?[] array = new object?[Count];
 
             for (int i = 0; i < array.Length; i++)
                 array[i] = _array[i];
 
-            return array;
+            return array!;
         }
 
         public void Reverse()
